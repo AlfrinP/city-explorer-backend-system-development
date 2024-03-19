@@ -15,7 +15,6 @@ class UserProfile(models.Model):
 
 class UserChoice(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    activity_chosen = models.CharField(max_length=25)
+    chosen_city = models.CharField(max_length=25,default=None)
+    chosen_activity = models.CharField(max_length=25,default=None)
     weather = models.CharField(max_length=25)
-
-
