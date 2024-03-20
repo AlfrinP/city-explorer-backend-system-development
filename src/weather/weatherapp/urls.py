@@ -6,7 +6,9 @@ urlpatterns = [
     path('admin', admin.site.urls),
     path('weather/<str:place>/', Weather.as_view()),
     path('user', User.as_view()),
-    path('login',Login.as_view(), name='login'),
-    path('logout',Logout.as_view() , name='logout'),
-    path('tags',Preferences.as_view() , name='logout'),
+    path('login/', LoginAPIView.as_view(), name='user-login'),
+    path('register/', RegistrationAPIView.as_view(), name='user-registration'),
+    path('refresh/', RefreshAPIView.as_view(), name='user-refresh'),
+    path('logout/', LogoutAPIView.as_view(), name="user-logout")
+    # path('tags',Preferences.as_view() , name='logout'),
 ]
