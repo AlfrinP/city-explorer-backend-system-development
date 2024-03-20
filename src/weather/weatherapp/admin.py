@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import CustomUser, UserChoice, UserProfile
+from .models import *
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
 
 class UserChoiceInline(admin.TabularInline):
     model = UserChoice
+
 
 class CustomUserAdmin(admin.ModelAdmin):
     inlines = [UserProfileInline, UserChoiceInline]

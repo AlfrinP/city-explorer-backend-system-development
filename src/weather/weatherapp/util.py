@@ -19,7 +19,7 @@ def activity_data(data):
 def recommend_activity(weather_condition):
     categories = {
         'sunny': ("Bask in the sunshine and have a picnic at the park!", 'leisure.park'),
-        'clear': ("Sip a refreshing drink at an outdoor cafe and enjoy the clear skies.", {'leisure.picnic','leisure.picnic.picnic_site','leisure.picnic.picnic_table','leisure.picnic.bbq'}),
+        'clear': ("Sip a refreshing drink at an outdoor cafe and enjoy the clear skies.",'leisure'),
         'rain': ("Dive into adventure at a museum or aquarium - rain can't stop the fun!", 'entertainment.museum'),
         'drizzle': ("Embark on a cultural journey at an art gallery or catch a live performance at a theater!", 'entertainment.culture.gallery'),
         'snow': ("Hit the slopes and carve your way through fresh powder at a ski resort!", 'commercial.outdoor_and_sport.ski'),
@@ -32,7 +32,8 @@ def recommend_activity(weather_condition):
         'ash': ("Retreat to the comfort of a cozy hotel or guesthouse - let the ash outside add a touch of adventure to your indoor retreat!", 'accommodation.hotel'),
         'squall': ("Cozy up in a snug hostel or bed-and-breakfast and ride out the storm in style!", 'accommodation.hostel'),
         'tornado': ("Take shelter and relax in the welcoming ambiance of a motel or inn - let the storm rage while you stay safe and sound!", 'accommodation.motel'),
-        'thunderstorm': ("Snuggle up in a rustic cabin or chalet and let the thunderstorm provide the soundtrack to your cozy retreat!", 'accommodation.chalet')
+        'thunderstorm': ("Snuggle up in a rustic cabin or chalet and let the thunderstorm provide the soundtrack to your cozy retreat!", 'accommodation.chalet'),
+        'clouds': ("Enjoy a leisurely day indoors or explore cozy cafes while watching the clouds drift by.", 'leisure')
     }
 
     weather_condition = weather_condition.lower()
@@ -40,5 +41,5 @@ def recommend_activity(weather_condition):
         description, category = categories[weather_condition]
         return description, category
     else:
-        return ("No specific recommendation for this weather condition.", None)
+        return ("No specific recommendation for this weather condition.", 'None')
 
