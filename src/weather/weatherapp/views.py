@@ -29,8 +29,10 @@ class Weather(APIView):
         place = request.data.get('city')
         refresh_token = request.COOKIES.get('refreshToken')
         id = decode_refresh_token(refresh_token)
+        
         if CustomUser.objects.filter(id=id).exists():
             user = CustomUser.objects.get(id=id)
+            
             if validate_city(place):
                 r = requests.get('https://api.openweathermap.org/data/2.5/weather',
                                  params={
@@ -57,21 +59,35 @@ class Weather(APIView):
                                          'categories': categories,
                                      })
                     if a.status_code == 200:
-                        activity_data_list.extend(activity_data(a.json()))
-                        recommendation, _ = RecommendationChoice.objects.get_or_create(
-                            name=descriptions,
-                            defaults={'district': '', 'street': '',
-                                        'address': '', 'phone': ''}
-                        )
-                        if not UserChoice.objects.filter(user=user,
-                                                            chosen_city=place,
-                                                            weather=weatherdata["main"]).exists():
-                            UserChoice.objects.create(
+                        print(a.json())
+                        for activity in activity_data(a.json()):
+                            activity_data_list.append({
+                                'name': activity['name'],
+                                'city': activity['city'],
+                                'street': activity['street'],
+                                'address': activity['address'],
+                                'phone': activity['phone']
+                            })
+
+                            recommendation, _ = RecommendationChoice.objects.get_or_create(
+                                name=activity['name'],
+                                city=activity['city'],
+                                street=activity['street'],
+                                address=activity['address'],
+                                phone=activity['phone']
+                            )
+
+                        if not UserChoice.objects.filter(user=user, chosen_city=place, weather=weatherdata["main"]).exists():
+                            user_choice, created = UserChoice.objects.get_or_create(
                                 user=user,
                                 chosen_city=place,
-                                recommendations=recommendation,
-                                weather=weatherdata["main"]
+                                weather=weatherdata["main"],
                             )
+                            if not created:
+                                user_choice.recommendations.set([recommendation])
+                        else:
+                            user_choice = UserChoice.objects.get(user=user, chosen_city=place, weather=weatherdata["main"])
+                            user_choice.recommendations.set([recommendation])
                     else:
                         return Response({'message': 'Failed to fetch activity data'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -90,12 +106,11 @@ class Weather(APIView):
                 return Response({'message': 'City name should only contain alphabets!'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'message': 'User is not logged in!'}, status=status.HTTP_400_BAD_REQUEST)
-        
+      
 class User(APIView):
     def get(self, request):
         refresh_token = request.COOKIES.get('refreshToken')
         id = decode_refresh_token(refresh_token)
-        print(id)
         if CustomUser.objects.filter(id=id).exists():
             try:
                 user = CustomUser.objects.get(id=id)
@@ -169,7 +184,6 @@ class LoginAPIView(APIView):
     def post(self, request):
         data = request.data
         EoM = data.get('emailorusername')
-        print(EoM)
         if EoM is None:
             raise APIException('EmailOrUsername is a mandatory field.')
         try:
@@ -181,7 +195,6 @@ class LoginAPIView(APIView):
                 user = CustomUser.objects.get(email=EoM)
             except ObjectDoesNotExist:
                 user = None
-        print(user)
         if user is None:
             raise APIException('Invalid Credentials')
 
@@ -271,9 +284,9 @@ class History(APIView):
         refresh_token = request.COOKIES.get('refreshToken')
         id = decode_refresh_token(refresh_token)
         try:
-            user = CustomUser.objects.get(id=id) 
-            print(user)
-            user_choices_data = UserChoiceSerializer(user)
+            user = CustomUser.objects.get(id=id)
+            user_choices = UserChoice.objects.filter(user=user) 
+            user_choices_data = UserChoiceSerializer(user_choices, many=True)
             return Response(user_choices_data.data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({'message': 'User not logged in!'}, status=status.HTTP_404_NOT_FOUND)

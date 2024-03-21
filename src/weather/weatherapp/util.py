@@ -6,9 +6,9 @@ def activity_data(data):
         properties = feature['properties']
         filtered_feature = {
             'name': properties.get('name', ''),
-            'district': properties.get('district', ''),
-            'street': properties.get('street', ''),
-            'Address': properties.get('formatted', ''),
+            'city': properties.get('city', ''),
+            'street': properties.get('suburb', ''),
+            'address': properties.get('formatted', ''),
             'phone': properties.get('contact', {}).get('phone', ''),
             'opening_hours': properties.get('opening_hours', '')
         }

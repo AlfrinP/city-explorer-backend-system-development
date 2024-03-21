@@ -17,13 +17,13 @@ class UserProfile(models.Model):
 
 class RecommendationChoice(models.Model):
     name = models.CharField(max_length=100)
-    district = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
     street = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
 
 class UserChoice(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     chosen_city = models.CharField(max_length=25)
-    recommendations = models.ForeignKey(RecommendationChoice, on_delete=models.CASCADE)
+    recommendations = models.ManyToManyField(RecommendationChoice)
     weather = models.CharField(max_length=25)
